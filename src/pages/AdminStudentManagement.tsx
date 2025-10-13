@@ -125,10 +125,13 @@ const AdminStudentManagement = () => {
         return;
       }
 
-      // Create auth user with default password "2233"
+      // Generate a random 6-digit PIN
+      const randomPin = Math.floor(100000 + Math.random() * 900000).toString();
+      
+      // Create auth user with 6-digit PIN
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: formData.email,
-        password: "2233", // Default PIN as requested
+        password: randomPin, // Random 6-digit PIN
         options: {
           emailRedirectTo: `${window.location.origin}/`,
           data: {
@@ -177,7 +180,8 @@ const AdminStudentManagement = () => {
       // The student profile will be automatically created by the trigger
       toast({
         title: "Student Created Successfully",
-        description: `Student account created with default PIN: 2233`,
+        description: `Student account created with PIN: ${randomPin}. Please share this PIN with the student.`,
+        duration: 10000, // Show for 10 seconds so admin can note the PIN
       });
 
       // Reset form and close dialog
@@ -215,9 +219,11 @@ const AdminStudentManagement = () => {
 
   const handleResetPassword = async (studentId: string, email: string) => {
     try {
-      // Reset to default PIN
+      // Generate a new random 6-digit PIN
+      const newPin = Math.floor(100000 + Math.random() * 900000).toString();
+      
       const { error } = await supabase.auth.admin.updateUserById(studentId, {
-        password: "223344"
+        password: newPin
       });
 
       if (error) {
@@ -237,7 +243,8 @@ const AdminStudentManagement = () => {
 
       toast({
         title: "Password Reset",
-        description: "Student password has been reset to default PIN: 223344",
+        description: `Student password has been reset to new PIN: ${newPin}. Please share this PIN with the student.`,
+        duration: 10000, // Show for 10 seconds so admin can note the PIN
       });
 
       loadStudents();
@@ -320,7 +327,7 @@ const AdminStudentManagement = () => {
                 <DialogHeader>
                   <DialogTitle>Add New Student</DialogTitle>
                   <DialogDescription>
-                    Create a new student account with default PIN (223344)
+                    Create a new student account with a randomly generated 6-digit PIN
                   </DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleCreateStudent} className="space-y-6">

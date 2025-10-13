@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { GraduationCap, ArrowLeft } from "lucide-react";
@@ -55,9 +56,8 @@ const Auth = () => {
         return;
       }
 
-      // For default PIN, accept "223344". For changed passwords, use the PIN they entered
-      const password = studentData.password_changed ? loginForm.pin : 
-                      (loginForm.pin === "223344" ? "223344" : loginForm.pin);
+      // Use the PIN directly - it should be 6 digits
+      const password = loginForm.pin;
 
       const { error } = await supabase.auth.signInWithPassword({
         email: studentData.email,
@@ -156,7 +156,7 @@ const Auth = () => {
             <CardDescription>
               {showReset 
                 ? "Enter your email to reset your password" 
-                : "Use your matric number and PIN to access your results. Students must contact the admin to create an account."
+                : "Use your matric number and 6-digit PIN to access your results. Students must contact the admin to create an account."
               }
             </CardDescription>
           </CardHeader>
@@ -175,17 +175,28 @@ const Auth = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="pin">PIN</Label>
-                  <Input
-                    id="pin"
-                    type="password"
-                    placeholder="Enter your PIN (default: 223344)"
+                  <Label htmlFor="pin">6-Digit PIN</Label>
+                  <InputOTP
+                    maxLength={6}
                     value={loginForm.pin}
-                    onChange={(e) => setLoginForm({ ...loginForm, pin: e.target.value })}
-                    required
-                  />
+                    onChange={(value) => setLoginForm({ ...loginForm, pin: value })}
+                  >
+                    <InputOTPGroup>
+                      <InputOTPSlot index={0} />
+                      <InputOTPSlot index={1} />
+                      <InputOTPSlot index={2} />
+                      <InputOTPSlot index={3} />
+                      <InputOTPSlot index={4} />
+                      <InputOTPSlot index={5} />
+                    </InputOTPGroup>
+                  </InputOTP>
+                  <p className="text-xs text-muted-foreground">Enter the 6-digit PIN provided by your admin</p>
                 </div>
-                <Button type="submit" className="w-full" disabled={loading}>
+                <Button 
+                  type="submit" 
+                  className="w-full" 
+                  disabled={loading || loginForm.pin.length !== 6}
+                >
                   {loading ? "Signing In..." : "Sign In"}
                 </Button>
                 <div className="text-center">
