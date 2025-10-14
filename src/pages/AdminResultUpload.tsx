@@ -104,7 +104,7 @@ const AdminResultUpload = () => {
       .select('*')
       .eq('level', selectedLevel)
       .eq('semester', selectedSemester)
-      .order('course_code');
+      .order('code');
 
     if (error) {
       toast({
