@@ -90,7 +90,9 @@ The project includes SQL migrations in the `supabase/migrations` directory. Thes
 
 **IMPORTANT**: Before using the system, you need to create an admin account in Supabase Cloud.
 
-See the detailed guide: **[ADMIN_SETUP.md](ADMIN_SETUP.md)**
+📚 **Guides**:
+- **Quick Start**: [QUICK_START.md](QUICK_START.md) - Fast setup in 5 steps
+- **Detailed Guide**: [ADMIN_SETUP.md](ADMIN_SETUP.md) - Complete documentation with troubleshooting
 
 Quick setup (requires Supabase service role key):
 ```bash
@@ -100,7 +102,7 @@ npm run setup-admin
 
 Default admin credentials after setup:
 - **Email**: admin@plasu.edu.ng
-- **Password**: Admin123456
+- **Password**: Admin123456 (⚠️ Change after first login!)
 
 ### 6. Start Development Server
 
