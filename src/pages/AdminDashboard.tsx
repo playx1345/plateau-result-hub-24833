@@ -569,12 +569,12 @@ const AdminDashboard = () => {
               </CardHeader>
               <CardContent>
                 <div className="text-center py-12">
-                  <CreditCard className="w-12 h-12 text-primary mx-auto mb-4" />
+                  <CreditCard className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
                   <h3 className="text-lg font-semibold mb-2">Fee Verification</h3>
                   <p className="text-muted-foreground mb-4">
-                    Manage and verify student fee payments for all sessions
+                    This section will allow you to verify and manage student fee payments
                   </p>
-                  <Button onClick={() => navigate("/admin/fees")}>Go to Fee Management</Button>
+                  <Button disabled>Coming Soon</Button>
                 </div>
               </CardContent>
             </Card>
@@ -591,12 +591,12 @@ const AdminDashboard = () => {
               </CardHeader>
               <CardContent>
                 <div className="text-center py-12">
-                  <Bell className="w-12 h-12 text-primary mx-auto mb-4" />
+                  <Bell className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
                   <h3 className="text-lg font-semibold mb-2">Student Announcements</h3>
                   <p className="text-muted-foreground mb-4">
-                    Create and manage announcements for students
+                    This section will allow you to send announcements to students
                   </p>
-                  <Button onClick={() => navigate("/admin/announcements")}>Go to Announcements</Button>
+                  <Button disabled>Coming Soon</Button>
                 </div>
               </CardContent>
             </Card>

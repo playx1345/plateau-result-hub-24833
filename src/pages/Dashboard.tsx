@@ -270,37 +270,6 @@ const Dashboard = () => {
               </Card>
             </div>
 
-            {/* Quick Actions */}
-            <div className="grid sm:grid-cols-2 gap-4 mb-8">
-              <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => navigate("/cgp-calculator")}>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium flex items-center gap-2">
-                    <Calculator className="w-4 h-4" />
-                    CGP Calculator
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-xs text-muted-foreground">
-                    Calculate your cumulative grade point
-                  </p>
-                </CardContent>
-              </Card>
-              
-              <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => navigate("/announcements")}>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium flex items-center gap-2">
-                    <Bell className="w-4 h-4" />
-                    Announcements
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-xs text-muted-foreground">
-                    View important announcements
-                  </p>
-                </CardContent>
-              </Card>
-            </div>
-
             {/* Results Access */}
             <Card>
               <CardHeader>
