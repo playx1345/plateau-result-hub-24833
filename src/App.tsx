@@ -17,6 +17,10 @@ import AdminStudentManagement from "./pages/AdminStudentManagement";
 import DemoSetup from "./pages/DemoSetup";
 import AdminSetup from "./pages/AdminSetup";
 import NotFound from "./pages/NotFound";
+import AdminFeeManagement from "./pages/AdminFeeManagement";
+import AdminAnnouncements from "./pages/AdminAnnouncements";
+import CGPCalculator from "./pages/CGPCalculator";
+import StudentAnnouncements from "./pages/StudentAnnouncements";
 
 const queryClient = new QueryClient();
 
@@ -34,10 +38,15 @@ const App = () => (
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/profile" element={<StudentProfile />} />
             <Route path="/results" element={<StudentResults />} />
+            <Route path="/cgp-calculator" element={<CGPCalculator />} />
+            <Route path="/announcements" element={<StudentAnnouncements />} />
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
             <Route path="/admin/students" element={<AdminStudentManagement />} />
             <Route path="/admin/upload" element={<AdminResultUpload />} />
             <Route path="/admin/bulk-upload" element={<AdminBulkUpload />} />
+            <Route path="/admin/fees" element={<AdminFeeManagement />} />
+            <Route path="/admin/announcements" element={<AdminAnnouncements />} />
+            <Route path="/admin/cgp-calculator" element={<CGPCalculator />} />
             <Route path="/demo-setup" element={<DemoSetup />} />
             <Route path="/admin-setup" element={<AdminSetup />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
