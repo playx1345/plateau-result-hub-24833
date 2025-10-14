@@ -25,9 +25,22 @@ const Auth = () => {
     pin: ""
   });
 
+  // Signup form state
+  const [signupForm, setSignupForm] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    matricNumber: "",
+    phoneNumber: "",
+    level: "ND1",
+    pin: "",
+    confirmPin: ""
+  });
+
   // Password reset state
   const [resetEmail, setResetEmail] = useState("");
   const [showReset, setShowReset] = useState(false);
+  const [activeTab, setActiveTab] = useState("login");
 
 
   useEffect(() => {
@@ -81,6 +94,113 @@ const Auth = () => {
       });
 
       navigate("/dashboard");
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSignup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (signupForm.pin !== signupForm.confirmPin) {
+      toast({
+        title: "PIN Mismatch",
+        description: "PINs do not match. Please try again.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (signupForm.pin.length !== 6) {
+      toast({
+        title: "Invalid PIN",
+        description: "PIN must be exactly 6 digits.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      // Create auth user with 6-digit PIN as password
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: signupForm.email,
+        password: signupForm.pin,
+        options: {
+          emailRedirectTo: `${window.location.origin}/dashboard`,
+          data: {
+            first_name: signupForm.firstName,
+            last_name: signupForm.lastName,
+          }
+        }
+      });
+
+      if (authError) {
+        toast({
+          title: "Signup Failed",
+          description: authError.message,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (!authData.user) {
+        toast({
+          title: "Signup Failed",
+          description: "Could not create user account",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Create student record
+      const { error: studentError } = await supabase
+        .from('students')
+        .insert({
+          user_id: authData.user.id,
+          matric_number: signupForm.matricNumber,
+          first_name: signupForm.firstName,
+          last_name: signupForm.lastName,
+          email: signupForm.email,
+          phone: signupForm.phoneNumber,
+          level: signupForm.level as "ND1" | "ND2",
+          password_changed: false
+        });
+
+      if (studentError) {
+        toast({
+          title: "Registration Failed",
+          description: studentError.message,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      toast({
+        title: "Account Created",
+        description: "Your account has been created successfully. Please check your email to verify your account.",
+      });
+
+      // Reset form
+      setSignupForm({
+        firstName: "",
+        lastName: "",
+        email: "",
+        matricNumber: "",
+        phoneNumber: "",
+        level: "ND1",
+        pin: "",
+        confirmPin: ""
+      });
+      
+      setActiveTab("login");
     } catch (error) {
       toast({
         title: "Error",
