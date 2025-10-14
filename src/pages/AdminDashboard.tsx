@@ -22,8 +22,6 @@ import {
   Bell,
   FileSpreadsheet
 } from "lucide-react";
-import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
-import { AdminSidebar } from "@/components/AdminSidebar";
 
 interface Admin {
   id: string;
@@ -273,24 +271,30 @@ const AdminDashboard = () => {
   }
 
   return (
-    <SidebarProvider defaultOpen={true}>
-      <AdminSidebar adminName={`${admin.first_name} ${admin.last_name}`} />
-      <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
-          <SidebarTrigger className="-ml-1" />
-          <div className="flex items-center gap-2 flex-1">
-            <Shield className="w-5 h-5" />
-            <h1 className="text-xl font-semibold">Admin Dashboard</h1>
-          </div>
-        </header>
-        <div className="flex flex-1 flex-col gap-4 p-4 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-          <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+      {/* Header */}
+      <header className="bg-white/90 backdrop-blur-sm border-b border-border/50 sticky top-0 z-50 shadow-sm">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-lg flex items-center justify-center shadow-lg">
+                <Shield className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-lg font-bold text-foreground">Admin Dashboard</h1>
+                <p className="text-sm text-muted-foreground">Welcome, {admin.first_name}</p>
+              </div>
+            </div>
             <Button onClick={handleLogout} variant="outline" size="sm" className="hover:bg-red-50 hover:border-red-200">
               <LogOut className="w-4 h-4 mr-2" />
               Logout
             </Button>
           </div>
-          <Tabs value={activeTab} onValueChange={setActiveTab}>
+        </div>
+      </header>
+
+      <div className="container mx-auto px-4 py-8">
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="grid w-full grid-cols-6 mb-8">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="students">Students</TabsTrigger>
@@ -602,9 +606,8 @@ const AdminDashboard = () => {
             </Card>
           </TabsContent>
         </Tabs>
-        </div>
-      </SidebarInset>
-    </SidebarProvider>
+      </div>
+    </div>
   );
 };
 
