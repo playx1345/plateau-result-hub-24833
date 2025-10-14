@@ -24,68 +24,22 @@ const AdminLogin = () => {
     setLoading(true);
 
     try {
-      // First verify admin credentials using our function
-      const { data: isValidAdmin, error: verifyError } = await supabase
-        .rpc('verify_admin_login', {
-          admin_email: form.email,
-          admin_password: form.password
-        });
+      // Try to sign in with Supabase auth
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+        email: form.email,
+        password: form.password,
+      });
 
-      if (verifyError || !isValidAdmin) {
+      if (authError) {
         toast({
           title: "Login Failed",
-          description: "Invalid administrator credentials",
+          description: "Invalid email or password",
           variant: "destructive",
         });
         return;
       }
 
-      // For hardcoded admin accounts, use localStorage session
-      if ((form.email === 'admin@plasu.edu.ng' && form.password === '123456') ||
-          (form.email === 'silasplayx64@gmail.com' && form.password === '123456')) {
-        
-        // Store admin info in localStorage for session management
-        localStorage.setItem('adminSession', JSON.stringify({
-          email: form.email,
-          username: form.username || 'admin',
-          isDefaultAdmin: true,
-          loginTime: Date.now()
-        }));
-
-        toast({
-          title: "Login Successful",
-          description: "Welcome to the admin dashboard",
-        });
-
-        navigate("/admin/dashboard");
-        return;
-      }
-
-      // For other admin accounts, try Supabase auth
-      const { error } = await supabase.auth.signInWithPassword({
-        email: form.email,
-        password: form.password,
-      });
-
-      if (error) {
-        // If Supabase auth fails, but admin is verified, use localStorage
-        localStorage.setItem('adminSession', JSON.stringify({
-          email: form.email,
-          username: form.username || 'admin',
-          isDefaultAdmin: true,
-          loginTime: Date.now()
-        }));
-
-        toast({
-          title: "Login Successful",
-          description: "Welcome to the admin dashboard",
-        });
-
-        navigate("/admin/dashboard");
-        return;
-      }
-
-      // Check if user is admin by verifying admin record exists
+      // Verify the user is an admin
       const { data: adminData, error: adminError } = await supabase
         .from('admins')
         .select('*')
@@ -93,6 +47,7 @@ const AdminLogin = () => {
         .single();
 
       if (adminError || !adminData) {
+        // Not an admin, sign them out
         await supabase.auth.signOut();
         toast({
           title: "Access Denied",
@@ -102,13 +57,23 @@ const AdminLogin = () => {
         return;
       }
 
+      // Store admin session info
+      localStorage.setItem('adminSession', JSON.stringify({
+        email: form.email,
+        username: adminData.first_name || form.username || 'admin',
+        adminId: adminData.id,
+        userId: authData.user.id,
+        loginTime: Date.now()
+      }));
+
       toast({
         title: "Login Successful",
-        description: "Welcome to the admin dashboard",
+        description: `Welcome back, ${adminData.first_name}!`,
       });
 
       navigate("/admin/dashboard");
     } catch (error) {
+      console.error('Login error:', error);
       toast({
         title: "Error",
         description: "An unexpected error occurred",

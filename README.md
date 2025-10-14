@@ -67,7 +67,7 @@ npm install
 
 ### 3. Environment Configuration
 
-Create a `.env` file in the root directory with your Supabase credentials:
+Create a `.env` file in the root directory with your Supabase credentials (you can copy from `.env.example`):
 
 ```env
 VITE_SUPABASE_URL=your_supabase_project_url
@@ -86,7 +86,25 @@ The project includes SQL migrations in the `supabase/migrations` directory. Thes
 - **Fee Payments table** - Fee payment tracking
 - **Announcements table** - System announcements
 
-### 5. Start Development Server
+### 5. Admin Account Setup
+
+**IMPORTANT**: Before using the system, you need to create an admin account in Supabase Cloud.
+
+📚 **Guides**:
+- **Quick Start**: [QUICK_START.md](QUICK_START.md) - Fast setup in 5 steps
+- **Detailed Guide**: [ADMIN_SETUP.md](ADMIN_SETUP.md) - Complete documentation with troubleshooting
+
+Quick setup (requires Supabase service role key):
+```bash
+export SUPABASE_SERVICE_ROLE_KEY="your_service_role_key"
+npm run setup-admin
+```
+
+Default admin credentials after setup:
+- **Email**: admin@plasu.edu.ng
+- **Password**: Admin123456 (⚠️ Change after first login!)
+
+### 6. Start Development Server
 
 ```bash
 npm run dev
@@ -111,12 +129,13 @@ The application will be available at `http://localhost:5173`
 
 ### Administrator Access
 
-1. Navigate to the home page
-2. Click **"Admin Login"**
-3. Login with admin credentials:
+1. **First**: Set up the admin account using the instructions in [ADMIN_SETUP.md](ADMIN_SETUP.md)
+2. Navigate to the home page
+3. Click **"Admin Login"**
+4. Login with admin credentials:
    - **Email**: admin@plasu.edu.ng
-   - **Password**: Admin1234
-4. Access the admin dashboard to:
+   - **Password**: Admin123456 (default, change after first login)
+5. Access the admin dashboard to:
    - Manage student accounts
    - Upload results (individual or bulk)
    - Manage fee payments
