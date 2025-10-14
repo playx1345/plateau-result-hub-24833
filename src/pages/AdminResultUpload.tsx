@@ -24,16 +24,16 @@ interface Student {
   first_name: string;
   last_name: string;
   middle_name?: string;
-  level: 'ND1' | 'ND2';
+  level: string;
 }
 
 interface Course {
   id: string;
-  course_code: string;
-  course_title: string;
-  credit_unit: number;
-  level: 'ND1' | 'ND2';
-  semester: 'First' | 'Second';
+  code: string;
+  title: string;
+  credit_hours: number;
+  level: string;
+  semester: string;
 }
 
 interface ResultEntry {
@@ -184,7 +184,8 @@ const AdminResultUpload = () => {
         ca_score: entry.ca_score,
         exam_score: entry.exam_score,
         total_score: entry.ca_score + entry.exam_score,
-        session: entry.session
+        session: entry.session,
+        semester: selectedSemester
       }));
 
       const { error } = await supabase
@@ -224,7 +225,7 @@ const AdminResultUpload = () => {
 
   const getCourseName = (courseId: string) => {
     const course = courses.find(c => c.id === courseId);
-    return course ? `${course.course_code} - ${course.course_title}` : 'Unknown Course';
+    return course ? `${course.code} - ${course.title}` : 'Unknown Course';
   };
 
   return (
@@ -324,7 +325,7 @@ const AdminResultUpload = () => {
                     <SelectContent>
                       {courses.map(course => (
                         <SelectItem key={course.id} value={course.id}>
-                          {course.course_code} - {course.course_title}
+                          {course.code} - {course.title}
                         </SelectItem>
                       ))}
                     </SelectContent>

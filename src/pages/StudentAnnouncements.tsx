@@ -13,8 +13,7 @@ interface Announcement {
   id: string;
   title: string;
   content: string;
-  target_level?: 'ND1' | 'ND2';
-  is_general: boolean;
+  target_level?: string;
   created_at: string;
 }
 
@@ -22,7 +21,7 @@ interface Student {
   id: string;
   first_name: string;
   last_name: string;
-  level: 'ND1' | 'ND2';
+  level: string;
 }
 
 const StudentAnnouncements = () => {
@@ -69,7 +68,7 @@ const StudentAnnouncements = () => {
       const { data: announcementsData, error: announcementsError } = await supabase
         .from('announcements')
         .select('*')
-        .or(`is_general.eq.true,target_level.eq.${studentData.level}`)
+        .or(`target_level.eq.All,target_level.eq.${studentData.level}`)
         .order('created_at', { ascending: false });
 
       if (announcementsError) {
@@ -131,11 +130,9 @@ const StudentAnnouncements = () => {
                           <div className="space-y-1 flex-1">
                             <CardTitle className="text-lg">{announcement.title}</CardTitle>
                             <CardDescription>
-                              {announcement.is_general ? (
-                                <Badge variant="secondary">General</Badge>
-                              ) : (
-                                <Badge variant="outline">{announcement.target_level}</Badge>
-                              )}
+                              <Badge variant={announcement.target_level === 'All' ? 'secondary' : 'outline'}>
+                                {announcement.target_level || 'All'}
+                              </Badge>
                               {" • "}
                               {new Date(announcement.created_at).toLocaleDateString('en-US', {
                                 year: 'numeric',

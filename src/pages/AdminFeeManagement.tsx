@@ -17,16 +17,16 @@ import { AdminSidebar } from "@/components/AdminSidebar";
 interface FeePayment {
   id: string;
   student_id: string;
-  status: 'paid' | 'unpaid' | 'partial';
+  status: string;
   session: string;
-  level: 'ND1' | 'ND2';
-  semester: 'First' | 'Second';
+  semester: string;
   amount_paid?: number;
   student?: {
     matric_number: string;
     first_name: string;
     last_name: string;
     email: string;
+    level: string;
   };
 }
 
@@ -94,7 +94,7 @@ const AdminFeeManagement = () => {
       .from('fee_payments')
       .select(`
         *,
-        student:students(matric_number, first_name, last_name, email)
+        student:students(matric_number, first_name, last_name, email, level)
       `)
       .order('created_at', { ascending: false });
 
@@ -160,7 +160,7 @@ const AdminFeeManagement = () => {
       payment.student?.first_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       payment.student?.last_name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = filterStatus === "all" || payment.status === filterStatus;
-    const matchesLevel = filterLevel === "all" || payment.level === filterLevel;
+    const matchesLevel = filterLevel === "all" || payment.student?.level === filterLevel;
     return matchesSearch && matchesStatus && matchesLevel;
   });
 
@@ -256,7 +256,7 @@ const AdminFeeManagement = () => {
                           <TableCell>
                             {payment.student?.first_name} {payment.student?.last_name}
                           </TableCell>
-                          <TableCell>{payment.level}</TableCell>
+                          <TableCell>{payment.student?.level}</TableCell>
                           <TableCell>{payment.semester}</TableCell>
                           <TableCell>{payment.session}</TableCell>
                           <TableCell>
