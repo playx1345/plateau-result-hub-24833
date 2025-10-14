@@ -269,92 +269,215 @@ const Auth = () => {
         </div>
 
         <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
-          <CardHeader className="text-center">
-            <CardTitle>
-              {showReset ? "Reset Password" : "Sign In"}
-            </CardTitle>
-            <CardDescription>
-              {showReset 
-                ? "Enter your email to reset your password" 
-                : "Use your matric number and 6-digit PIN to access your results. Students must contact the admin to create an account."
-              }
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+          <CardContent className="pt-6">
             {!showReset ? (
-              <form onSubmit={handleLogin} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="matricNumber">Matric Number</Label>
-                  <Input
-                    id="matricNumber"
-                    type="text"
-                    placeholder="e.g., ND/CS/2024/001"
-                    value={loginForm.matricNumber}
-                    onChange={(e) => setLoginForm({ ...loginForm, matricNumber: e.target.value })}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="pin">6-Digit PIN</Label>
-                  <InputOTP
-                    maxLength={6}
-                    value={loginForm.pin}
-                    onChange={(value) => setLoginForm({ ...loginForm, pin: value })}
-                  >
-                    <InputOTPGroup>
-                      <InputOTPSlot index={0} />
-                      <InputOTPSlot index={1} />
-                      <InputOTPSlot index={2} />
-                      <InputOTPSlot index={3} />
-                      <InputOTPSlot index={4} />
-                      <InputOTPSlot index={5} />
-                    </InputOTPGroup>
-                  </InputOTP>
-                  <p className="text-xs text-muted-foreground">Enter the 6-digit PIN provided by your admin</p>
-                </div>
-                <Button 
-                  type="submit" 
-                  className="w-full" 
-                  disabled={loading || loginForm.pin.length !== 6}
-                >
-                  {loading ? "Signing In..." : "Sign In"}
-                </Button>
-                <div className="text-center">
-                  <button
-                    type="button"
-                    onClick={() => setShowReset(true)}
-                    className="text-sm text-primary hover:underline"
-                  >
-                    Forgot your PIN? Reset password
-                  </button>
-                </div>
-              </form>
+              <Tabs value={activeTab} onValueChange={setActiveTab}>
+                <TabsList className="grid w-full grid-cols-2 mb-6">
+                  <TabsTrigger value="login">Login</TabsTrigger>
+                  <TabsTrigger value="signup">Sign Up</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="login">
+                  <div className="text-center mb-4">
+                    <h2 className="text-xl font-semibold">Student Login</h2>
+                    <p className="text-sm text-muted-foreground">Enter your credentials to access your results</p>
+                  </div>
+                  <form onSubmit={handleLogin} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="matricNumber">Matric Number</Label>
+                      <Input
+                        id="matricNumber"
+                        type="text"
+                        placeholder="e.g., ND/CS/2024/001"
+                        value={loginForm.matricNumber}
+                        onChange={(e) => setLoginForm({ ...loginForm, matricNumber: e.target.value })}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="pin">6-Digit PIN</Label>
+                      <InputOTP
+                        maxLength={6}
+                        value={loginForm.pin}
+                        onChange={(value) => setLoginForm({ ...loginForm, pin: value })}
+                      >
+                        <InputOTPGroup>
+                          <InputOTPSlot index={0} />
+                          <InputOTPSlot index={1} />
+                          <InputOTPSlot index={2} />
+                          <InputOTPSlot index={3} />
+                          <InputOTPSlot index={4} />
+                          <InputOTPSlot index={5} />
+                        </InputOTPGroup>
+                      </InputOTP>
+                      <p className="text-xs text-muted-foreground">Enter the 6-digit PIN provided by your admin</p>
+                    </div>
+                    <Button 
+                      type="submit" 
+                      className="w-full" 
+                      disabled={loading || loginForm.pin.length !== 6}
+                    >
+                      {loading ? "Signing In..." : "Sign In"}
+                    </Button>
+                    <div className="text-center">
+                      <button
+                        type="button"
+                        onClick={() => setShowReset(true)}
+                        className="text-sm text-primary hover:underline"
+                      >
+                        Forgot your PIN? Reset password
+                      </button>
+                    </div>
+                  </form>
+                </TabsContent>
+
+                <TabsContent value="signup">
+                  <div className="text-center mb-4">
+                    <h2 className="text-xl font-semibold">Create Account</h2>
+                    <p className="text-sm text-muted-foreground">Register as a new student</p>
+                  </div>
+                  <form onSubmit={handleSignup} className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="firstName">First Name</Label>
+                        <Input
+                          id="firstName"
+                          type="text"
+                          value={signupForm.firstName}
+                          onChange={(e) => setSignupForm({ ...signupForm, firstName: e.target.value })}
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="lastName">Last Name</Label>
+                        <Input
+                          id="lastName"
+                          type="text"
+                          value={signupForm.lastName}
+                          onChange={(e) => setSignupForm({ ...signupForm, lastName: e.target.value })}
+                          required
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="signupEmail">Email</Label>
+                      <Input
+                        id="signupEmail"
+                        type="email"
+                        value={signupForm.email}
+                        onChange={(e) => setSignupForm({ ...signupForm, email: e.target.value })}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="signupMatric">Matric Number</Label>
+                      <Input
+                        id="signupMatric"
+                        type="text"
+                        placeholder="e.g., ND/CS/2024/001"
+                        value={signupForm.matricNumber}
+                        onChange={(e) => setSignupForm({ ...signupForm, matricNumber: e.target.value })}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="phoneNumber">Phone Number</Label>
+                      <Input
+                        id="phoneNumber"
+                        type="tel"
+                        value={signupForm.phoneNumber}
+                        onChange={(e) => setSignupForm({ ...signupForm, phoneNumber: e.target.value })}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="level">Level</Label>
+                      <Select value={signupForm.level} onValueChange={(value) => setSignupForm({ ...signupForm, level: value })}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="ND1">ND1</SelectItem>
+                          <SelectItem value="ND2">ND2</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="signupPin">Create 6-Digit PIN</Label>
+                      <InputOTP
+                        maxLength={6}
+                        value={signupForm.pin}
+                        onChange={(value) => setSignupForm({ ...signupForm, pin: value })}
+                      >
+                        <InputOTPGroup>
+                          <InputOTPSlot index={0} />
+                          <InputOTPSlot index={1} />
+                          <InputOTPSlot index={2} />
+                          <InputOTPSlot index={3} />
+                          <InputOTPSlot index={4} />
+                          <InputOTPSlot index={5} />
+                        </InputOTPGroup>
+                      </InputOTP>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="confirmPin">Confirm PIN</Label>
+                      <InputOTP
+                        maxLength={6}
+                        value={signupForm.confirmPin}
+                        onChange={(value) => setSignupForm({ ...signupForm, confirmPin: value })}
+                      >
+                        <InputOTPGroup>
+                          <InputOTPSlot index={0} />
+                          <InputOTPSlot index={1} />
+                          <InputOTPSlot index={2} />
+                          <InputOTPSlot index={3} />
+                          <InputOTPSlot index={4} />
+                          <InputOTPSlot index={5} />
+                        </InputOTPGroup>
+                      </InputOTP>
+                    </div>
+                    <Button 
+                      type="submit" 
+                      className="w-full" 
+                      disabled={loading || signupForm.pin.length !== 6 || signupForm.confirmPin.length !== 6}
+                    >
+                      {loading ? "Creating Account..." : "Create Account"}
+                    </Button>
+                  </form>
+                </TabsContent>
+              </Tabs>
             ) : (
-              <form onSubmit={handlePasswordReset} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="resetEmail">Email Address</Label>
-                  <Input
-                    id="resetEmail"
-                    type="email"
-                    placeholder="Enter your registered email"
-                    value={resetEmail}
-                    onChange={(e) => setResetEmail(e.target.value)}
-                    required
-                  />
+              <>
+                <div className="text-center mb-4">
+                  <h2 className="text-xl font-semibold">Reset Password</h2>
+                  <p className="text-sm text-muted-foreground">Enter your email to reset your password</p>
                 </div>
-                <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? "Sending Reset Email..." : "Send Reset Email"}
-                </Button>
-                <div className="text-center">
-                  <button
-                    type="button"
-                    onClick={() => setShowReset(false)}
-                    className="text-sm text-muted-foreground hover:underline"
-                  >
-                    Back to login
-                  </button>
-                </div>
-              </form>
+                <form onSubmit={handlePasswordReset} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="resetEmail">Email Address</Label>
+                    <Input
+                      id="resetEmail"
+                      type="email"
+                      placeholder="Enter your registered email"
+                      value={resetEmail}
+                      onChange={(e) => setResetEmail(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <Button type="submit" className="w-full" disabled={loading}>
+                    {loading ? "Sending Reset Email..." : "Send Reset Email"}
+                  </Button>
+                  <div className="text-center">
+                    <button
+                      type="button"
+                      onClick={() => setShowReset(false)}
+                      className="text-sm text-muted-foreground hover:underline"
+                    >
+                      Back to login
+                    </button>
+                  </div>
+                </form>
+              </>
             )}
           </CardContent>
         </Card>
