@@ -155,6 +155,18 @@ To quickly set up demo data for testing:
    - Sample results
    - Sample announcements
 
+## 🔒 Security
+
+This system implements multiple layers of security:
+
+- **Authentication**: Supabase Auth with password hashing (bcrypt)
+- **Row Level Security (RLS)**: Database-level access control policies
+- **Admin Protection**: Restrictive RLS policies prevent non-admin users from accessing admin records
+- **Session Management**: JWT-based secure session handling
+- **Authorization**: Role-based access control (students vs admins)
+
+**Recent Security Update**: Added comprehensive RLS policies to the admins table to prevent unauthorized access to administrator contact information. See [docs/SECURITY_FIX_ADMIN_RLS.md](docs/SECURITY_FIX_ADMIN_RLS.md) for details.
+
 ## 🗄️ Database Schema
 
 ### Key Tables
