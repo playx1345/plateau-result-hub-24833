@@ -1,60 +1,52 @@
--- Create function to automatically create student profile when auth user is created
-CREATE OR REPLACE FUNCTION public.handle_new_student()
+-- Create function to handle new user registration
+CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER
 LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public
 AS $$
 BEGIN
-  -- Insert student profile with data from auth metadata
+  -- Insert student profile using metadata from signup
   INSERT INTO public.students (
-    id,
     user_id,
+    email,
     matric_number,
     first_name,
     last_name,
     middle_name,
-    email,
     phone,
     level,
-    department,
-    faculty,
     date_of_birth,
     gender,
     address,
     state_of_origin,
-    lga,
-    password_changed
+    lga
   )
   VALUES (
-    gen_random_uuid(),
     NEW.id,
-    COALESCE(NEW.raw_user_meta_data->>'matric_number', ''),
-    COALESCE(NEW.raw_user_meta_data->>'first_name', ''),
-    COALESCE(NEW.raw_user_meta_data->>'last_name', ''),
-    NEW.raw_user_meta_data->>'middle_name',
     NEW.email,
-    NEW.raw_user_meta_data->>'phone',
-    COALESCE(NEW.raw_user_meta_data->>'level', 'ND1')::student_level,
-    COALESCE(NEW.raw_user_meta_data->>'department', 'Computer Science'),
-    COALESCE(NEW.raw_user_meta_data->>'faculty', 'School of Information and Communication Technology'),
-    (NEW.raw_user_meta_data->>'date_of_birth')::date,
-    NEW.raw_user_meta_data->>'gender',
-    NEW.raw_user_meta_data->>'address',
-    NEW.raw_user_meta_data->>'state_of_origin',
-    NEW.raw_user_meta_data->>'lga',
-    false
+    COALESCE(NEW.raw_user_meta_data ->> 'matric_number', ''),
+    COALESCE(NEW.raw_user_meta_data ->> 'first_name', ''),
+    COALESCE(NEW.raw_user_meta_data ->> 'last_name', ''),
+    NEW.raw_user_meta_data ->> 'middle_name',
+    NEW.raw_user_meta_data ->> 'phone',
+    COALESCE(NEW.raw_user_meta_data ->> 'level', 'ND1')::student_level,
+    (NEW.raw_user_meta_data ->> 'date_of_birth')::date,
+    NEW.raw_user_meta_data ->> 'gender',
+    NEW.raw_user_meta_data ->> 'address',
+    NEW.raw_user_meta_data ->> 'state_of_origin',
+    NEW.raw_user_meta_data ->> 'lga'
   );
+  
   RETURN NEW;
 END;
 $$;
 
--- Create trigger to automatically create student profile on user signup
+-- Create trigger to automatically create student profile on user registration
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
-  FOR EACH ROW
-  EXECUTE FUNCTION public.handle_new_student();
+  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
 -- Create some default courses for ND1 and ND2
 INSERT INTO public.courses (course_code, course_title, credit_unit, level, semester) VALUES
