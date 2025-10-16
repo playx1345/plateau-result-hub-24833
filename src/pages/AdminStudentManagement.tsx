@@ -35,7 +35,7 @@ interface Student {
   first_name: string;
   last_name: string;
   middle_name?: string;
-  level: string;
+  level: 'ND1' | 'ND2';
   email: string;
   phone?: string;
   department?: string;

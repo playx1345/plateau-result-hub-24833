@@ -31,9 +31,9 @@ interface Result {
   grade_point: number;
   session: string;
   course: {
-    code: string;
-    title: string;
-    credit_hours: number;
+    course_code: string;
+    course_title: string;
+    credit_unit: number;
   };
 }
 
@@ -43,16 +43,17 @@ interface Student {
   first_name: string;
   last_name: string;
   middle_name?: string;
-  level: string;
+  level: 'ND1' | 'ND2';
   email: string;
   faculty: string;
   department: string;
 }
 
 interface FeeStatus {
-  status: string;
+  status: 'paid' | 'unpaid' | 'partial';
   session: string;
-  semester: string;
+  level: 'ND1' | 'ND2';
+  semester: 'First' | 'Second';
 }
 
 const StudentResults = () => {
@@ -108,7 +109,7 @@ const StudentResults = () => {
       // Load fee status
       const { data: feeData, error: feeError } = await supabase
         .from('fee_payments')
-        .select('status, session, semester')
+        .select('status, session, level, semester')
         .eq('student_id', studentData.id);
 
       if (!feeError && feeData) {
@@ -152,9 +153,9 @@ const StudentResults = () => {
         grade_point,
         session,
         course:courses(
-          code,
-          title,
-          credit_hours
+          course_code,
+          course_title,
+          credit_unit
         )
       `)
       .eq('student_id', studentId)
@@ -169,6 +170,7 @@ const StudentResults = () => {
   const canViewResults = () => {
     const currentSession = "2024/2025";
     const fee = feeStatus.find(f => 
+      f.level === selectedLevel && 
       f.semester === selectedSemester && 
       f.session === currentSession
     );
@@ -176,8 +178,8 @@ const StudentResults = () => {
   };
 
   const calculateStats = () => {
-    const totalCreditUnits = results.reduce((sum, result) => sum + (result.course?.credit_hours || 0), 0);
-    const totalGradePoints = results.reduce((sum, result) => sum + (result.grade_point * (result.course?.credit_hours || 0)), 0);
+    const totalCreditUnits = results.reduce((sum, result) => sum + (result.course?.credit_unit || 0), 0);
+    const totalGradePoints = results.reduce((sum, result) => sum + (result.grade_point * (result.course?.credit_unit || 0)), 0);
     const cgp = totalCreditUnits > 0 ? (totalGradePoints / totalCreditUnits).toFixed(2) : '0.00';
     const carryovers = results.filter(result => result.grade === 'F').length;
     
@@ -421,10 +423,10 @@ const StudentResults = () => {
                   {results.map((result) => (
                     <TableRow key={result.id}>
                       <TableCell className="font-mono font-medium">
-                        {result.course?.code}
+                        {result.course?.course_code}
                       </TableCell>
-                      <TableCell>{result.course?.title}</TableCell>
-                      <TableCell className="text-center">{result.course?.credit_hours}</TableCell>
+                      <TableCell>{result.course?.course_title}</TableCell>
+                      <TableCell className="text-center">{result.course?.credit_unit}</TableCell>
                       <TableCell className="text-center">{result.ca_score}</TableCell>
                       <TableCell className="text-center">{result.exam_score}</TableCell>
                       <TableCell className="text-center font-semibold">{result.total_score}</TableCell>

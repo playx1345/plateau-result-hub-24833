@@ -175,11 +175,8 @@ The following migration files set up the admin infrastructure:
 
 1. `20251014014856_533ae60a-d728-43cb-a7d6-cc59b8450ba6.sql` - Creates the base tables
 2. `20251014020900_setup_real_admin.sql` - Sets up admin permissions and policies
-3. `20251015003418_restrict_admin_table_access.sql` - **Security fix**: Adds restrictive RLS policies to prevent non-admin users from accessing admin records
 
 Make sure these migrations have been applied to your Supabase project.
-
-**Security Note**: The latest migration adds comprehensive Row Level Security (RLS) policies to prevent students and other non-admin users from accessing admin contact information. See [docs/SECURITY_FIX_ADMIN_RLS.md](docs/SECURITY_FIX_ADMIN_RLS.md) for details.
 
 ## Security Best Practices
 
@@ -189,7 +186,6 @@ Make sure these migrations have been applied to your Supabase project.
 4. **Limit admin access** to authorized personnel only
 5. **Monitor admin activity** through Supabase logs
 6. **Enable MFA** (Multi-Factor Authentication) for admin accounts when available
-7. **RLS Policies**: The admins table is protected with restrictive Row Level Security policies that prevent non-admin users from accessing admin data. See [SECURITY_FIX_ADMIN_RLS.md](docs/SECURITY_FIX_ADMIN_RLS.md) for details.
 
 ## Adding Additional Admins
 

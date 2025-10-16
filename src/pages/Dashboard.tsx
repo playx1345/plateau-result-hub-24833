@@ -27,16 +27,17 @@ interface Student {
   first_name: string;
   last_name: string;
   middle_name?: string;
-  level: string;
+  level: 'ND1' | 'ND2';
   email: string;
   phone?: string;
   password_changed: boolean;
 }
 
 interface FeeStatus {
-  status: string;
+  status: 'paid' | 'unpaid' | 'partial';
   session: string;
-  semester: string;
+  level: 'ND1' | 'ND2';
+  semester: 'First' | 'Second';
 }
 
 const Dashboard = () => {
@@ -80,7 +81,7 @@ const Dashboard = () => {
       // Fetch fee status
       const { data: feeData, error: feeError } = await supabase
         .from('fee_payments')
-        .select('status, session, semester')
+        .select('status, session, level, semester')
         .eq('student_id', studentData.id);
 
       if (!feeError && feeData) {
@@ -107,17 +108,18 @@ const Dashboard = () => {
     });
   };
 
-  const getFeePaidStatus = (semester: string) => {
+  const getFeePaidStatus = (level: 'ND1' | 'ND2', semester: 'First' | 'Second') => {
     const currentSession = "2024/2025"; // This should be dynamic
     const fee = feeStatus.find(f => 
+      f.level === level && 
       f.semester === semester && 
       f.session === currentSession
     );
     return fee?.status === 'paid';
   };
 
-  const canViewResults = (level: string, semester: string) => {
-    return getFeePaidStatus(semester);
+  const canViewResults = (level: 'ND1' | 'ND2', semester: 'First' | 'Second') => {
+    return getFeePaidStatus(level, semester);
   };
 
   if (authLoading || loading) {
@@ -261,7 +263,7 @@ const Dashboard = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">
-                    {getFeePaidStatus('First') ? 'Paid' : 'Pending'}
+                    {getFeePaidStatus(student.level, 'First') ? 'Paid' : 'Pending'}
                   </div>
                   <p className="text-xs text-muted-foreground">Current Semester</p>
                 </CardContent>
@@ -319,7 +321,7 @@ const Dashboard = () => {
                       <CardContent className="p-4">
                         <div className="flex items-center justify-between mb-2">
                           <h5 className="font-medium">First Semester</h5>
-                          {getFeePaidStatus('First') ? (
+                          {getFeePaidStatus('ND1', 'First') ? (
                             <CheckCircle className="w-5 h-5 text-green-600" />
                           ) : (
                             <AlertCircle className="w-5 h-5 text-yellow-600" />
@@ -345,7 +347,7 @@ const Dashboard = () => {
                       <CardContent className="p-4">
                         <div className="flex items-center justify-between mb-2">
                           <h5 className="font-medium">Second Semester</h5>
-                          {getFeePaidStatus('Second') ? (
+                          {getFeePaidStatus('ND1', 'Second') ? (
                             <CheckCircle className="w-5 h-5 text-green-600" />
                           ) : (
                             <AlertCircle className="w-5 h-5 text-yellow-600" />
@@ -377,7 +379,7 @@ const Dashboard = () => {
                       <CardContent className="p-4">
                         <div className="flex items-center justify-between mb-2">
                           <h5 className="font-medium">First Semester</h5>
-                          {getFeePaidStatus('First') ? (
+                          {getFeePaidStatus('ND2', 'First') ? (
                             <CheckCircle className="w-5 h-5 text-green-600" />
                           ) : (
                             <AlertCircle className="w-5 h-5 text-yellow-600" />
@@ -403,7 +405,7 @@ const Dashboard = () => {
                       <CardContent className="p-4">
                         <div className="flex items-center justify-between mb-2">
                           <h5 className="font-medium">Second Semester</h5>
-                          {getFeePaidStatus('Second') ? (
+                          {getFeePaidStatus('ND2', 'Second') ? (
                             <CheckCircle className="w-5 h-5 text-green-600" />
                           ) : (
                             <AlertCircle className="w-5 h-5 text-yellow-600" />

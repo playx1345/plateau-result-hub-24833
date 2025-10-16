@@ -29,9 +29,10 @@ interface Announcement {
   id: string;
   title: string;
   content: string;
-  target_level?: string;
+  target_level?: 'ND1' | 'ND2';
+  is_general: boolean;
   created_at: string;
-  created_by?: string;
+  created_by: string;
 }
 
 const AdminAnnouncements = () => {
@@ -46,6 +47,7 @@ const AdminAnnouncements = () => {
     title: "",
     content: "",
     target_level: "",
+    is_general: true,
   });
 
   useEffect(() => {
@@ -129,9 +131,13 @@ const AdminAnnouncements = () => {
     const announcementData: any = {
       title: newAnnouncement.title,
       content: newAnnouncement.content,
+      is_general: newAnnouncement.is_general,
       created_by: admin.id,
-      target_level: newAnnouncement.target_level || 'All',
     };
+
+    if (!newAnnouncement.is_general && newAnnouncement.target_level) {
+      announcementData.target_level = newAnnouncement.target_level;
+    }
 
     const { error } = await supabase
       .from('announcements')
@@ -155,6 +161,7 @@ const AdminAnnouncements = () => {
       title: "",
       content: "",
       target_level: "",
+      is_general: true,
     });
     setShowForm(false);
     await loadAnnouncements();
@@ -231,21 +238,43 @@ const AdminAnnouncements = () => {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="level">Target Level</Label>
+                    <Label htmlFor="type">Announcement Type</Label>
                     <Select
-                      value={newAnnouncement.target_level}
-                      onValueChange={(value) => setNewAnnouncement({ ...newAnnouncement, target_level: value })}
+                      value={newAnnouncement.is_general ? "general" : "specific"}
+                      onValueChange={(value) => {
+                        setNewAnnouncement({
+                          ...newAnnouncement,
+                          is_general: value === "general",
+                          target_level: value === "general" ? "" : newAnnouncement.target_level,
+                        });
+                      }}
                     >
-                      <SelectTrigger id="level">
-                        <SelectValue placeholder="Select level" />
+                      <SelectTrigger id="type">
+                        <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="All">All Students</SelectItem>
-                        <SelectItem value="ND1">ND1</SelectItem>
-                        <SelectItem value="ND2">ND2</SelectItem>
+                        <SelectItem value="general">General (All Students)</SelectItem>
+                        <SelectItem value="specific">Specific Level</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
+                  {!newAnnouncement.is_general && (
+                    <div className="space-y-2">
+                      <Label htmlFor="level">Target Level</Label>
+                      <Select
+                        value={newAnnouncement.target_level}
+                        onValueChange={(value) => setNewAnnouncement({ ...newAnnouncement, target_level: value })}
+                      >
+                        <SelectTrigger id="level">
+                          <SelectValue placeholder="Select level" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="ND1">ND1</SelectItem>
+                          <SelectItem value="ND2">ND2</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
                   <div className="flex gap-2">
                     <Button type="submit">Create Announcement</Button>
                     <Button type="button" variant="outline" onClick={() => setShowForm(false)}>
@@ -274,9 +303,11 @@ const AdminAnnouncements = () => {
                           <div className="space-y-1">
                             <CardTitle className="text-lg">{announcement.title}</CardTitle>
                             <CardDescription>
-                              <Badge variant={announcement.target_level === 'All' ? 'secondary' : 'outline'}>
-                                {announcement.target_level || 'All'}
-                              </Badge>
+                              {announcement.is_general ? (
+                                <Badge variant="secondary">General</Badge>
+                              ) : (
+                                <Badge variant="outline">{announcement.target_level}</Badge>
+                              )}
                               {" • "}
                               {new Date(announcement.created_at).toLocaleDateString()}
                             </CardDescription>

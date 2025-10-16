@@ -30,8 +30,8 @@ interface Admin {
   first_name: string;
   last_name: string;
   email: string;
-  staff_id?: string;
-  department?: string;
+  staff_id: string;
+  department: string;
 }
 
 interface Student {

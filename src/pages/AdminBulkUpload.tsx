@@ -149,8 +149,8 @@ const AdminBulkUpload = () => {
             const { data: courseData, error: courseError } = await supabase
               .from('courses')
               .select('id')
-              .eq('code', result.course_code)
-              .maybeSingle();
+              .eq('course_code', result.course_code)
+              .single();
 
             if (courseError || !courseData) {
               result.status = 'error';
@@ -198,8 +198,7 @@ const AdminBulkUpload = () => {
         ca_score: result.ca_score,
         exam_score: result.exam_score,
         total_score: result.total_score,
-        session: result.session,
-        semester: 'First' // Default to First semester, adjust as needed
+        session: result.session
       }));
 
       const { error } = await supabase
