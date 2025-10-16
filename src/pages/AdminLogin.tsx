@@ -14,7 +14,6 @@ const AdminLogin = () => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
-    username: "",
     email: "",
     password: ""
   });
@@ -33,9 +32,20 @@ const AdminLogin = () => {
       if (authError) {
         toast({
           title: "Login Failed",
-          description: "Invalid email or password",
+          description: authError.message || "Invalid email or password",
           variant: "destructive",
         });
+        setLoading(false);
+        return;
+      }
+
+      if (!authData.user) {
+        toast({
+          title: "Login Failed",
+          description: "Authentication failed. Please try again.",
+          variant: "destructive",
+        });
+        setLoading(false);
         return;
       }
 
@@ -54,13 +64,14 @@ const AdminLogin = () => {
           description: "You are not authorized to access the admin panel",
           variant: "destructive",
         });
+        setLoading(false);
         return;
       }
 
       // Store admin session info
       localStorage.setItem('adminSession', JSON.stringify({
         email: form.email,
-        username: adminData.first_name || form.username || 'admin',
+        username: adminData.first_name || 'admin',
         adminId: adminData.id,
         userId: authData.user.id,
         loginTime: Date.now()
@@ -115,17 +126,6 @@ const AdminLogin = () => {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleLogin} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="username">Username</Label>
-                <Input
-                  id="username"
-                  type="text"
-                  placeholder="admin"
-                  value={form.username}
-                  onChange={(e) => setForm({ ...form, username: e.target.value })}
-                  required
-                />
-              </div>
               <div className="space-y-2">
                 <Label htmlFor="email">Admin Email</Label>
                 <Input
