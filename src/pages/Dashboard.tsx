@@ -14,8 +14,12 @@ import {
   CheckCircle,
   User,
   BookOpen,
-  CreditCard
+  CreditCard,
+  Bell,
+  Calculator
 } from "lucide-react";
+import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
+import { StudentSidebar } from "@/components/StudentSidebar";
 
 interface Student {
   id: string;
@@ -23,17 +27,16 @@ interface Student {
   first_name: string;
   last_name: string;
   middle_name?: string;
-  level: 'ND1' | 'ND2';
+  level: string;
   email: string;
   phone?: string;
   password_changed: boolean;
 }
 
 interface FeeStatus {
-  status: 'paid' | 'unpaid' | 'partial';
+  status: string;
   session: string;
-  level: 'ND1' | 'ND2';
-  semester: 'First' | 'Second';
+  semester: string;
 }
 
 const Dashboard = () => {
@@ -77,7 +80,7 @@ const Dashboard = () => {
       // Fetch fee status
       const { data: feeData, error: feeError } = await supabase
         .from('fee_payments')
-        .select('status, session, level, semester')
+        .select('status, session, semester')
         .eq('student_id', studentData.id);
 
       if (!feeError && feeData) {
@@ -104,18 +107,17 @@ const Dashboard = () => {
     });
   };
 
-  const getFeePaidStatus = (level: 'ND1' | 'ND2', semester: 'First' | 'Second') => {
+  const getFeePaidStatus = (semester: string) => {
     const currentSession = "2024/2025"; // This should be dynamic
     const fee = feeStatus.find(f => 
-      f.level === level && 
       f.semester === semester && 
       f.session === currentSession
     );
     return fee?.status === 'paid';
   };
 
-  const canViewResults = (level: 'ND1' | 'ND2', semester: 'First' | 'Second') => {
-    return getFeePaidStatus(level, semester);
+  const canViewResults = (level: string, semester: string) => {
+    return getFeePaidStatus(semester);
   };
 
   if (authLoading || loading) {
@@ -151,30 +153,18 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50">
-      {/* Header */}
-      <header className="bg-white/80 backdrop-blur-sm border-b border-border/50 sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-green-600 rounded-lg flex items-center justify-center">
-                <GraduationCap className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-lg font-bold text-foreground">Student Portal</h1>
-                <p className="text-sm text-muted-foreground">Welcome back, {student.first_name}</p>
-              </div>
-            </div>
-            <Button onClick={handleLogout} variant="outline" size="sm">
-              <LogOut className="w-4 h-4 mr-2" />
-              Logout
-            </Button>
+    <SidebarProvider defaultOpen={true}>
+      <StudentSidebar studentName={`${student.first_name} ${student.last_name}`} />
+      <SidebarInset>
+        <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+          <SidebarTrigger className="-ml-1" />
+          <div className="flex items-center gap-2 flex-1">
+            <GraduationCap className="w-5 h-5" />
+            <h1 className="text-xl font-semibold">Dashboard</h1>
           </div>
-        </div>
-      </header>
-
-      <div className="container mx-auto px-4 py-8">
-        <div className="grid lg:grid-cols-3 gap-8">
+        </header>
+        <div className="flex flex-1 flex-col gap-4 p-4 bg-gradient-to-br from-blue-50 to-green-50">
+          <div className="grid lg:grid-cols-3 gap-8">
           {/* Profile Section */}
           <div className="lg:col-span-1">
             <Card className="mb-6">
@@ -271,9 +261,40 @@ const Dashboard = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">
-                    {getFeePaidStatus(student.level, 'First') ? 'Paid' : 'Pending'}
+                    {getFeePaidStatus('First') ? 'Paid' : 'Pending'}
                   </div>
                   <p className="text-xs text-muted-foreground">Current Semester</p>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Quick Actions */}
+            <div className="grid sm:grid-cols-2 gap-4 mb-8">
+              <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => navigate("/cgp-calculator")}>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm font-medium flex items-center gap-2">
+                    <Calculator className="w-4 h-4" />
+                    CGP Calculator
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-xs text-muted-foreground">
+                    Calculate your cumulative grade point
+                  </p>
+                </CardContent>
+              </Card>
+              
+              <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => navigate("/announcements")}>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm font-medium flex items-center gap-2">
+                    <Bell className="w-4 h-4" />
+                    Announcements
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-xs text-muted-foreground">
+                    View important announcements
+                  </p>
                 </CardContent>
               </Card>
             </div>
@@ -298,7 +319,7 @@ const Dashboard = () => {
                       <CardContent className="p-4">
                         <div className="flex items-center justify-between mb-2">
                           <h5 className="font-medium">First Semester</h5>
-                          {getFeePaidStatus('ND1', 'First') ? (
+                          {getFeePaidStatus('First') ? (
                             <CheckCircle className="w-5 h-5 text-green-600" />
                           ) : (
                             <AlertCircle className="w-5 h-5 text-yellow-600" />
@@ -324,7 +345,7 @@ const Dashboard = () => {
                       <CardContent className="p-4">
                         <div className="flex items-center justify-between mb-2">
                           <h5 className="font-medium">Second Semester</h5>
-                          {getFeePaidStatus('ND1', 'Second') ? (
+                          {getFeePaidStatus('Second') ? (
                             <CheckCircle className="w-5 h-5 text-green-600" />
                           ) : (
                             <AlertCircle className="w-5 h-5 text-yellow-600" />
@@ -356,7 +377,7 @@ const Dashboard = () => {
                       <CardContent className="p-4">
                         <div className="flex items-center justify-between mb-2">
                           <h5 className="font-medium">First Semester</h5>
-                          {getFeePaidStatus('ND2', 'First') ? (
+                          {getFeePaidStatus('First') ? (
                             <CheckCircle className="w-5 h-5 text-green-600" />
                           ) : (
                             <AlertCircle className="w-5 h-5 text-yellow-600" />
@@ -382,7 +403,7 @@ const Dashboard = () => {
                       <CardContent className="p-4">
                         <div className="flex items-center justify-between mb-2">
                           <h5 className="font-medium">Second Semester</h5>
-                          {getFeePaidStatus('ND2', 'Second') ? (
+                          {getFeePaidStatus('Second') ? (
                             <CheckCircle className="w-5 h-5 text-green-600" />
                           ) : (
                             <AlertCircle className="w-5 h-5 text-yellow-600" />
@@ -408,9 +429,10 @@ const Dashboard = () => {
               </CardContent>
             </Card>
           </div>
+          </div>
         </div>
-      </div>
-    </div>
+      </SidebarInset>
+    </SidebarProvider>
   );
 };
 

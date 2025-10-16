@@ -10,44 +10,35 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "13.0.4"
+    PostgrestVersion: "13.0.5"
   }
   public: {
     Tables: {
       admins: {
         Row: {
           created_at: string
-          department: string | null
           email: string
           first_name: string
           id: string
           last_name: string
-          role: string | null
-          staff_id: string
           updated_at: string
           user_id: string | null
         }
         Insert: {
           created_at?: string
-          department?: string | null
           email: string
           first_name: string
           id?: string
           last_name: string
-          role?: string | null
-          staff_id: string
           updated_at?: string
           user_id?: string | null
         }
         Update: {
           created_at?: string
-          department?: string | null
           email?: string
           first_name?: string
           id?: string
           last_name?: string
-          role?: string | null
-          staff_id?: string
           updated_at?: string
           user_id?: string | null
         }
@@ -57,30 +48,27 @@ export type Database = {
         Row: {
           content: string
           created_at: string
-          created_by: string
+          created_by: string | null
           id: string
-          is_general: boolean | null
-          target_level: Database["public"]["Enums"]["student_level"] | null
+          target_level: string | null
           title: string
           updated_at: string
         }
         Insert: {
           content: string
           created_at?: string
-          created_by: string
+          created_by?: string | null
           id?: string
-          is_general?: boolean | null
-          target_level?: Database["public"]["Enums"]["student_level"] | null
+          target_level?: string | null
           title: string
           updated_at?: string
         }
         Update: {
           content?: string
           created_at?: string
-          created_by?: string
+          created_by?: string | null
           id?: string
-          is_general?: boolean | null
-          target_level?: Database["public"]["Enums"]["student_level"] | null
+          target_level?: string | null
           title?: string
           updated_at?: string
         }
@@ -96,77 +84,68 @@ export type Database = {
       }
       courses: {
         Row: {
-          course_code: string
-          course_title: string
+          code: string
           created_at: string
-          credit_unit: number
-          department: string | null
+          credit_hours: number
           id: string
-          level: Database["public"]["Enums"]["student_level"]
-          semester: Database["public"]["Enums"]["semester"]
+          level: string
+          semester: string
+          title: string
         }
         Insert: {
-          course_code: string
-          course_title: string
+          code: string
           created_at?: string
-          credit_unit: number
-          department?: string | null
+          credit_hours: number
           id?: string
-          level: Database["public"]["Enums"]["student_level"]
-          semester: Database["public"]["Enums"]["semester"]
+          level: string
+          semester: string
+          title: string
         }
         Update: {
-          course_code?: string
-          course_title?: string
+          code?: string
           created_at?: string
-          credit_unit?: number
-          department?: string | null
+          credit_hours?: number
           id?: string
-          level?: Database["public"]["Enums"]["student_level"]
-          semester?: Database["public"]["Enums"]["semester"]
+          level?: string
+          semester?: string
+          title?: string
         }
         Relationships: []
       }
       fee_payments: {
         Row: {
           amount_due: number
-          amount_paid: number | null
+          amount_paid: number
           created_at: string
           id: string
-          level: Database["public"]["Enums"]["student_level"]
           payment_date: string | null
-          reference_number: string | null
-          semester: Database["public"]["Enums"]["semester"]
+          semester: string
           session: string
-          status: Database["public"]["Enums"]["fee_status"]
+          status: string
           student_id: string
           updated_at: string
         }
         Insert: {
           amount_due: number
-          amount_paid?: number | null
+          amount_paid: number
           created_at?: string
           id?: string
-          level: Database["public"]["Enums"]["student_level"]
           payment_date?: string | null
-          reference_number?: string | null
-          semester: Database["public"]["Enums"]["semester"]
+          semester: string
           session: string
-          status?: Database["public"]["Enums"]["fee_status"]
+          status: string
           student_id: string
           updated_at?: string
         }
         Update: {
           amount_due?: number
-          amount_paid?: number | null
+          amount_paid?: number
           created_at?: string
           id?: string
-          level?: Database["public"]["Enums"]["student_level"]
           payment_date?: string | null
-          reference_number?: string | null
-          semester?: Database["public"]["Enums"]["semester"]
+          semester?: string
           session?: string
-          status?: Database["public"]["Enums"]["fee_status"]
+          status?: string
           student_id?: string
           updated_at?: string
         }
@@ -189,6 +168,7 @@ export type Database = {
           grade: string | null
           grade_point: number | null
           id: string
+          semester: string
           session: string
           student_id: string
           total_score: number | null
@@ -202,6 +182,7 @@ export type Database = {
           grade?: string | null
           grade_point?: number | null
           id?: string
+          semester: string
           session: string
           student_id: string
           total_score?: number | null
@@ -215,6 +196,7 @@ export type Database = {
           grade?: string | null
           grade_point?: number | null
           id?: string
+          semester?: string
           session?: string
           student_id?: string
           total_score?: number | null
@@ -249,7 +231,7 @@ export type Database = {
           gender: string | null
           id: string
           last_name: string
-          level: Database["public"]["Enums"]["student_level"]
+          level: string
           lga: string | null
           matric_number: string
           middle_name: string | null
@@ -257,7 +239,7 @@ export type Database = {
           phone: string | null
           state_of_origin: string | null
           updated_at: string
-          user_id: string
+          user_id: string | null
         }
         Insert: {
           address?: string | null
@@ -270,7 +252,7 @@ export type Database = {
           gender?: string | null
           id?: string
           last_name: string
-          level: Database["public"]["Enums"]["student_level"]
+          level: string
           lga?: string | null
           matric_number: string
           middle_name?: string | null
@@ -278,7 +260,7 @@ export type Database = {
           phone?: string | null
           state_of_origin?: string | null
           updated_at?: string
-          user_id: string
+          user_id?: string | null
         }
         Update: {
           address?: string | null
@@ -291,7 +273,7 @@ export type Database = {
           gender?: string | null
           id?: string
           last_name?: string
-          level?: Database["public"]["Enums"]["student_level"]
+          level?: string
           lga?: string | null
           matric_number?: string
           middle_name?: string | null
@@ -299,7 +281,7 @@ export type Database = {
           phone?: string | null
           state_of_origin?: string | null
           updated_at?: string
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -308,27 +290,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      calculate_grade: {
-        Args: { total_score: number }
-        Returns: {
-          grade: string
-          grade_point: number
-        }[]
-      }
-      ensure_admin_auth: {
-        Args: { admin_email: string; admin_password: string }
-        Returns: string
-      }
       verify_admin_login: {
         Args: { admin_email: string; admin_password: string }
         Returns: boolean
       }
     }
     Enums: {
-      fee_status: "paid" | "unpaid" | "partial"
-      semester: "First" | "Second"
-      student_level: "ND1" | "ND2"
-      user_role: "student" | "admin"
+      [_ in never]: never
     }
     CompositeTypes: {
       [_ in never]: never
@@ -455,11 +423,6 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {
-      fee_status: ["paid", "unpaid", "partial"],
-      semester: ["First", "Second"],
-      student_level: ["ND1", "ND2"],
-      user_role: ["student", "admin"],
-    },
+    Enums: {},
   },
 } as const

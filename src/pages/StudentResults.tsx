@@ -19,6 +19,8 @@ import {
 } from "lucide-react";
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
+import { StudentSidebar } from "@/components/StudentSidebar";
 
 interface Result {
   id: string;
@@ -29,9 +31,9 @@ interface Result {
   grade_point: number;
   session: string;
   course: {
-    course_code: string;
-    course_title: string;
-    credit_unit: number;
+    code: string;
+    title: string;
+    credit_hours: number;
   };
 }
 
@@ -41,17 +43,16 @@ interface Student {
   first_name: string;
   last_name: string;
   middle_name?: string;
-  level: 'ND1' | 'ND2';
+  level: string;
   email: string;
   faculty: string;
   department: string;
 }
 
 interface FeeStatus {
-  status: 'paid' | 'unpaid' | 'partial';
+  status: string;
   session: string;
-  level: 'ND1' | 'ND2';
-  semester: 'First' | 'Second';
+  semester: string;
 }
 
 const StudentResults = () => {
@@ -107,7 +108,7 @@ const StudentResults = () => {
       // Load fee status
       const { data: feeData, error: feeError } = await supabase
         .from('fee_payments')
-        .select('status, session, level, semester')
+        .select('status, session, semester')
         .eq('student_id', studentData.id);
 
       if (!feeError && feeData) {
@@ -151,9 +152,9 @@ const StudentResults = () => {
         grade_point,
         session,
         course:courses(
-          course_code,
-          course_title,
-          credit_unit
+          code,
+          title,
+          credit_hours
         )
       `)
       .eq('student_id', studentId)
@@ -168,7 +169,6 @@ const StudentResults = () => {
   const canViewResults = () => {
     const currentSession = "2024/2025";
     const fee = feeStatus.find(f => 
-      f.level === selectedLevel && 
       f.semester === selectedSemester && 
       f.session === currentSession
     );
@@ -176,8 +176,8 @@ const StudentResults = () => {
   };
 
   const calculateStats = () => {
-    const totalCreditUnits = results.reduce((sum, result) => sum + (result.course?.credit_unit || 0), 0);
-    const totalGradePoints = results.reduce((sum, result) => sum + (result.grade_point * (result.course?.credit_unit || 0)), 0);
+    const totalCreditUnits = results.reduce((sum, result) => sum + (result.course?.credit_hours || 0), 0);
+    const totalGradePoints = results.reduce((sum, result) => sum + (result.grade_point * (result.course?.credit_hours || 0)), 0);
     const cgp = totalCreditUnits > 0 ? (totalGradePoints / totalCreditUnits).toFixed(2) : '0.00';
     const carryovers = results.filter(result => result.grade === 'F').length;
     
@@ -266,40 +266,21 @@ const StudentResults = () => {
   const stats = calculateStats();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50">
-      {/* Header */}
-      <header className="bg-white/80 backdrop-blur-sm border-b border-border/50 sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => navigate("/dashboard")}
-                className="flex items-center gap-2"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                Back to Dashboard
-              </Button>
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-green-600 rounded-lg flex items-center justify-center">
-                <GraduationCap className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-lg font-bold text-foreground">Academic Results</h1>
-                <p className="text-sm text-muted-foreground">
-                  {student?.first_name} {student?.last_name} - {student?.matric_number}
-                </p>
-              </div>
-            </div>
-            <Button onClick={exportToPDF} className="flex items-center gap-2">
-              <Download className="w-4 h-4" />
-              Export PDF
-            </Button>
+    <SidebarProvider defaultOpen={true}>
+      <StudentSidebar studentName={student ? `${student.first_name} ${student.last_name}` : "Student"} />
+      <SidebarInset>
+        <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+          <SidebarTrigger className="-ml-1" />
+          <div className="flex items-center gap-2 flex-1">
+            <FileText className="w-5 h-5" />
+            <h1 className="text-xl font-semibold">Academic Results</h1>
           </div>
-        </div>
-      </header>
-
-      <div className="container mx-auto px-4 py-8">
+          <Button onClick={exportToPDF} className="flex items-center gap-2">
+            <Download className="w-4 h-4" />
+            Export PDF
+          </Button>
+        </header>
+        <div className="flex flex-1 flex-col gap-4 p-4 bg-gradient-to-br from-blue-50 to-green-50">
         {/* Filter Controls */}
         <Card className="mb-6">
           <CardHeader>
@@ -440,10 +421,10 @@ const StudentResults = () => {
                   {results.map((result) => (
                     <TableRow key={result.id}>
                       <TableCell className="font-mono font-medium">
-                        {result.course?.course_code}
+                        {result.course?.code}
                       </TableCell>
-                      <TableCell>{result.course?.course_title}</TableCell>
-                      <TableCell className="text-center">{result.course?.credit_unit}</TableCell>
+                      <TableCell>{result.course?.title}</TableCell>
+                      <TableCell className="text-center">{result.course?.credit_hours}</TableCell>
                       <TableCell className="text-center">{result.ca_score}</TableCell>
                       <TableCell className="text-center">{result.exam_score}</TableCell>
                       <TableCell className="text-center font-semibold">{result.total_score}</TableCell>
@@ -473,8 +454,9 @@ const StudentResults = () => {
             )}
           </CardContent>
         </Card>
-      </div>
-    </div>
+        </div>
+      </SidebarInset>
+    </SidebarProvider>
   );
 };
 
