@@ -32,9 +32,20 @@ const AdminLogin = () => {
       if (authError) {
         toast({
           title: "Login Failed",
-          description: "Invalid email or password",
+          description: authError.message || "Invalid email or password",
           variant: "destructive",
         });
+        setLoading(false);
+        return;
+      }
+
+      if (!authData.user) {
+        toast({
+          title: "Login Failed",
+          description: "Authentication failed. Please try again.",
+          variant: "destructive",
+        });
+        setLoading(false);
         return;
       }
 
@@ -53,6 +64,7 @@ const AdminLogin = () => {
           description: "You are not authorized to access the admin panel",
           variant: "destructive",
         });
+        setLoading(false);
         return;
       }
 

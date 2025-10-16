@@ -66,13 +66,14 @@ const Auth = () => {
           description: "Invalid matric number. Please check and try again.",
           variant: "destructive",
         });
+        setLoading(false);
         return;
       }
 
       // Use the PIN directly - it should be 6 digits
       const password = loginForm.pin;
 
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data: authData, error } = await supabase.auth.signInWithPassword({
         email: studentData.email,
         password: password,
       });
@@ -85,6 +86,17 @@ const Auth = () => {
             : error.message,
           variant: "destructive",
         });
+        setLoading(false);
+        return;
+      }
+
+      if (!authData.user) {
+        toast({
+          title: "Login Failed",
+          description: "Authentication failed. Please try again.",
+          variant: "destructive",
+        });
+        setLoading(false);
         return;
       }
 
@@ -95,9 +107,10 @@ const Auth = () => {
 
       navigate("/dashboard");
     } catch (error) {
+      console.error('Login error:', error);
       toast({
         title: "Error",
-        description: "An unexpected error occurred",
+        description: error instanceof Error ? error.message : "An unexpected error occurred",
         variant: "destructive",
       });
     } finally {
@@ -148,6 +161,7 @@ const Auth = () => {
           description: authError.message,
           variant: "destructive",
         });
+        setLoading(false);
         return;
       }
 
@@ -157,6 +171,7 @@ const Auth = () => {
           description: "Could not create user account",
           variant: "destructive",
         });
+        setLoading(false);
         return;
       }
 
@@ -180,6 +195,7 @@ const Auth = () => {
           description: studentError.message,
           variant: "destructive",
         });
+        setLoading(false);
         return;
       }
 
@@ -202,9 +218,10 @@ const Auth = () => {
       
       setActiveTab("login");
     } catch (error) {
+      console.error('Signup error:', error);
       toast({
         title: "Error",
-        description: "An unexpected error occurred",
+        description: error instanceof Error ? error.message : "An unexpected error occurred",
         variant: "destructive",
       });
     } finally {
@@ -227,6 +244,7 @@ const Auth = () => {
           description: error.message,
           variant: "destructive",
         });
+        setLoading(false);
         return;
       }
 
@@ -238,9 +256,10 @@ const Auth = () => {
       setShowReset(false);
       setResetEmail("");
     } catch (error) {
+      console.error('Password reset error:', error);
       toast({
         title: "Error",
-        description: "An unexpected error occurred",
+        description: error instanceof Error ? error.message : "An unexpected error occurred",
         variant: "destructive",
       });
     } finally {
