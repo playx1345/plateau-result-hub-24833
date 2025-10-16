@@ -19,8 +19,6 @@ import {
 } from "lucide-react";
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
-import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
-import { StudentSidebar } from "@/components/StudentSidebar";
 
 interface Result {
   id: string;
@@ -268,21 +266,40 @@ const StudentResults = () => {
   const stats = calculateStats();
 
   return (
-    <SidebarProvider defaultOpen={true}>
-      <StudentSidebar studentName={student ? `${student.first_name} ${student.last_name}` : "Student"} />
-      <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
-          <SidebarTrigger className="-ml-1" />
-          <div className="flex items-center gap-2 flex-1">
-            <FileText className="w-5 h-5" />
-            <h1 className="text-xl font-semibold">Academic Results</h1>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50">
+      {/* Header */}
+      <header className="bg-white/80 backdrop-blur-sm border-b border-border/50 sticky top-0 z-50">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => navigate("/dashboard")}
+                className="flex items-center gap-2"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Back to Dashboard
+              </Button>
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-green-600 rounded-lg flex items-center justify-center">
+                <GraduationCap className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-lg font-bold text-foreground">Academic Results</h1>
+                <p className="text-sm text-muted-foreground">
+                  {student?.first_name} {student?.last_name} - {student?.matric_number}
+                </p>
+              </div>
+            </div>
+            <Button onClick={exportToPDF} className="flex items-center gap-2">
+              <Download className="w-4 h-4" />
+              Export PDF
+            </Button>
           </div>
-          <Button onClick={exportToPDF} className="flex items-center gap-2">
-            <Download className="w-4 h-4" />
-            Export PDF
-          </Button>
-        </header>
-        <div className="flex flex-1 flex-col gap-4 p-4 bg-gradient-to-br from-blue-50 to-green-50">
+        </div>
+      </header>
+
+      <div className="container mx-auto px-4 py-8">
         {/* Filter Controls */}
         <Card className="mb-6">
           <CardHeader>
@@ -456,9 +473,8 @@ const StudentResults = () => {
             )}
           </CardContent>
         </Card>
-        </div>
-      </SidebarInset>
-    </SidebarProvider>
+      </div>
+    </div>
   );
 };
 
