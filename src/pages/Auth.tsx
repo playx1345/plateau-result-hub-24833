@@ -21,7 +21,7 @@ const Auth = () => {
 
   // Login form state
   const [loginForm, setLoginForm] = useState({
-    matricNumber: "",
+    identifier: "", // Can be either email or matric number
     pin: ""
   });
 
@@ -53,28 +53,39 @@ const Auth = () => {
     setLoading(true);
 
     try {
-      // First, find the student with the matric number
-      const { data: studentData, error: studentError } = await supabase
-        .from('students')
-        .select('email, id, password_changed')
-        .eq('matric_number', loginForm.matricNumber)
-        .single();
+      // Check if the identifier is an email (contains @) or a matric number
+      const isEmail = loginForm.identifier.includes('@');
+      let studentEmail: string;
 
-      if (studentError || !studentData) {
-        toast({
-          title: "Login Failed",
-          description: "Invalid matric number. Please check and try again.",
-          variant: "destructive",
-        });
-        setLoading(false);
-        return;
+      if (isEmail) {
+        // If it's an email, use it directly
+        studentEmail = loginForm.identifier;
+      } else {
+        // If it's a matric number, find the student's email
+        const { data: studentData, error: studentError } = await supabase
+          .from('students')
+          .select('email, id, password_changed')
+          .eq('matric_number', loginForm.identifier)
+          .single();
+
+        if (studentError || !studentData) {
+          toast({
+            title: "Login Failed",
+            description: "Invalid credentials. Please check and try again.",
+            variant: "destructive",
+          });
+          setLoading(false);
+          return;
+        }
+
+        studentEmail = studentData.email;
       }
 
       // Use the PIN directly - it should be 6 digits
       const password = loginForm.pin;
 
       const { data: authData, error } = await supabase.auth.signInWithPassword({
-        email: studentData.email,
+        email: studentEmail,
         password: password,
       });
 
@@ -303,13 +314,13 @@ const Auth = () => {
                   </div>
                   <form onSubmit={handleLogin} className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="matricNumber">Matric Number</Label>
+                      <Label htmlFor="identifier">Email or Matric Number</Label>
                       <Input
-                        id="matricNumber"
+                        id="identifier"
                         type="text"
-                        placeholder="e.g., ND/CS/2024/001"
-                        value={loginForm.matricNumber}
-                        onChange={(e) => setLoginForm({ ...loginForm, matricNumber: e.target.value })}
+                        placeholder="e.g., student@email.com or ND/CS/2024/001"
+                        value={loginForm.identifier}
+                        onChange={(e) => setLoginForm({ ...loginForm, identifier: e.target.value })}
                         required
                       />
                     </div>
