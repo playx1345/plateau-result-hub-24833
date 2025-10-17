@@ -14,7 +14,7 @@ This system provides a modern, secure platform for managing and viewing student 
 - 📋 **Result History** - Track academic performance across semesters
 - 💳 **Fee Status** - Check school fee payment status
 - 🔔 **Announcements** - Receive important notices and updates
-- 🔒 **Secure Authentication** - Login with matric number and PIN
+- 🔒 **Secure Authentication** - Login with email or matric number and PIN
 - 📄 **Download Results** - Export results as PDF for printing
 
 ### For Administrators
@@ -119,7 +119,7 @@ The application will be available at `http://localhost:5173`
 1. Navigate to the home page
 2. Click **"Student Login"** or **"View My Results"**
 3. Login with your credentials:
-   - **Matric Number**: Your assigned matriculation number
+   - **Email or Matric Number**: Your registered email address or assigned matriculation number
    - **PIN**: Your 6-digit PIN (default: 223344)
 4. Access your dashboard to:
    - View semester results
