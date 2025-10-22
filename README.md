@@ -164,8 +164,24 @@ This system implements multiple layers of security:
 - **Admin Protection**: Restrictive RLS policies prevent non-admin users from accessing admin records
 - **Session Management**: JWT-based secure session handling
 - **Authorization**: Role-based access control (students vs admins)
+- **Audit Logging**: Comprehensive tracking of all administrative actions
+- **Rate Limiting**: Protection against brute force attacks (database-level)
+- **Carryover Tracking**: Automated tracking of failed courses and retake attempts
 
 **Recent Security Update**: Added comprehensive RLS policies to the admins table to prevent unauthorized access to administrator contact information. See [docs/SECURITY_FIX_ADMIN_RLS.md](docs/SECURITY_FIX_ADMIN_RLS.md) for details.
+
+### 📚 Comprehensive Documentation
+
+For detailed information about the system, see our comprehensive documentation:
+
+- **[System Implementation Guide](docs/SYSTEM_IMPLEMENTATION_GUIDE.md)** - Complete overview of all features, authentication, authorization, and implementation details
+- **[RBAC Implementation Guide](docs/RBAC_IMPLEMENTATION_GUIDE.md)** - Detailed role-based access control documentation with policies and examples
+- **[API Documentation](docs/API_DOCUMENTATION.md)** - Complete API reference for all endpoints, database functions, and queries
+- **[PIN Reset Policy](docs/PIN_RESET_POLICY.md)** - PIN and password management policies and procedures
+- **[Admin Setup Guide](ADMIN_SETUP.md)** - Step-by-step admin account creation
+- **[Quick Start Guide](QUICK_START.md)** - Fast setup in 5 steps
+- **[Security Checklist](docs/SECURITY_CHECKLIST.md)** - Security verification and testing
+- **[Admin RLS Diagram](docs/ADMIN_RLS_DIAGRAM.md)** - Visual representation of security policies
 
 ## 🗄️ Database Schema
 
